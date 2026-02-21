@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVoice Pro - AI Course Material Reader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-dark: #0B1C2D;
+            --primary: #1EC9FF;
+            --primary-hover: #5EDCFF;
+            --secondary: #6C63FF;
+            --accent: #FF6584;
+            --success: #06D6A0;
+            --warning: #FFB800;
+            --text-primary: #0F172A;
+            --text-secondary: #64748B;
+            --text-light: #FFFFFF;
+            --border-color: #E2E8F0;
+            --card-bg: #FFFFFF;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --highlight-bg: #FEF3C7;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0B1C2D;
+            --bg-secondary: #1E293B;
+            --bg-dark: #0B1C2D;
+            --primary: #1EC9FF;
+            --primary-hover: #5EDCFF;
+            --secondary: #6C63FF;
+            --accent: #FF6584;
+            --success: #06D6A0;
+            --warning: #FFB800;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-light: #FFFFFF;
+            --border-color: #334155;
+            --card-bg: #1E293B;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --highlight-bg: #854D0E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .theme-icon {
+            font-size: 1.25rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .upload-zone {
+            border: 3px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .settings-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .setting-group {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .setting-label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Manrope', sans-serif;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 8px 24px rgba(30, 201, 255, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(30, 201, 255, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .audio-player {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .audio-player.active {
+            display: block;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(30, 201, 255, 0.4);
+        }
+
+        .time-display {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .progress-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            cursor: grab;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .progress-container:hover .progress-handle {
+            opacity: 1;
+        }
+
+        .transcript-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .transcript-paragraph {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .transcript-paragraph:hover {
+            background: var(--bg-primary);
+        }
+
+        .transcript-paragraph.active {
+            background: var(--highlight-bg);
+            border-left-color: var(--primary);
+            transform: translateX(8px);
+        }
+
+        .para-number {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bookmark-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: transform 0.2s;
+        }
+
+        .bookmark-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .bookmark-btn.bookmarked {
+            color: var(--warning);
+        }
+
+        .explanation {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.75rem;
+            border-left: 3px solid var(--secondary);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-card {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: var(--bg-primary);
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .bookmarks-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .bookmark-item {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .bookmark-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            position: relative;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 8;
+        }
+
+        .circle-progress {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .circle-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-card {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .main-card {
+                padding: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span class="theme-icon" id="themeIcon">🌙</span>
+                <span id="themeText">Dark Mode</span>
+            </div>
+        </div>
+
+        <header>
+            <h1>🎧 EduVoice Pro</h1>
+            <p class="tagline">Transform Your Course Materials into Interactive Audio Lessons</p>
+        </header>
+
+        <div class="main-grid">
+            <div>
+                <div class="main-card">
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.pptx">
+                        <div class="upload-icon">📚</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Drop your course material here</div>
+                        <div style="color: var(--text-secondary); font-size: 0.95rem;">Supports PDF, DOCX & PPTX files</div>
+                    </div>
+
+                    <div id="fileName" style="margin-top: 1rem; text-align: center; color: var(--primary); font-weight: 600;"></div>
+
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <label class="setting-label">📖 Explanation Level</label>
+                            <select id="explanationLevel">
+                                <option value="simple">Simple (Beginner-friendly)</option>
+                                <option value="intermediate" selected>Intermediate (University level)</option>
+                                <option value="detailed">Detailed (Advanced analysis)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="generateBtn" disabled>
+                        ✨ Generate Audio Lesson
+                    </button>
+                </div>
+
+                <div class="audio-player" id="audioPlayer">
+                    <h3 style="margin-bottom: 1.5rem;">🎵 Audio Player</h3>
+                    
+                    <div class="player-controls">
+                        <button class="play-btn" id="playBtn">▶️</button>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                        <div class="progress-handle" id="progressHandle"></div>
+                    </div>
+
+                    <audio id="audioElement" style="display: none;"></audio>
+                </div>
+
+                <div class="transcript-container" id="transcriptContainer" style="display: none;">
+                    <h3 style="margin-bottom: 1.5rem;">📝 Transcript & Explanations</h3>
+                    <div id="transcriptContent"></div>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <div class="main-card">
+                    <h3 class="section-title">📊 Learning Analytics</h3>
+                    
+                    <div class="progress-circle">
+                        <svg width="120" height="120">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#1EC9FF" />
+                                    <stop offset="100%" style="stop-color:#6C63FF" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="circle-bg" cx="60" cy="60" r="52"></circle>
+                            <circle class="circle-progress" cx="60" cy="60" r="52" 
+                                    stroke-dasharray="326.73" 
+                                    stroke-dashoffset="326.73"
+                                    id="progressCircle"></circle>
+                        </svg>
+                        <div class="circle-text" id="progressPercent">0%</div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-value" id="totalParagraphs">0</span>
+                            <span class="stat-label">Paragraphs</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value" id="completedParagraphs">0</span>
+                            <span class="stat-label">Completed</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value" id="studyTime">0m</span>
+                            <span class="stat-label">Study Time</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value" id="bookmarkCount">0</span>
+                            <span class="stat-label">Bookmarks</span>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 2rem;">🔖 Bookmarks</h3>
+                    <div class="bookmarks-list" id="bookmarksList">
+                        <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            No bookmarks yet. Click the bookmark icon on any paragraph!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let currentTheme = 'dark';
+        let audioElement = null;
+        let currentParagraph = 0;
+        let bookmarks = new Set();
+        let studyStartTime = null;
+        let paragraphData = [];
+
+        const mockTranscript = [
+            {
+                id: 1,
+                text: "Machine learning is a subset of artificial intelligence that focuses on the development of algorithms that can learn from and make predictions or decisions based on data.",
+                explanation: "Think of machine learning like teaching a child to recognize animals. Instead of programming every rule, we show examples and let the computer find patterns on its own.",
+                startTime: 0,
+                duration: 15
+            },
+            {
+                id: 2,
+                text: "Neural networks are computing systems inspired by the biological neural networks that constitute animal brains.",
+                explanation: "Just like our brain has neurons that connect and fire, artificial neural networks have layers of nodes that process information and pass it forward.",
+                startTime: 15,
+                duration: 12
+            },
+            {
+                id: 3,
+                text: "Deep learning is a subset of machine learning that uses neural networks with multiple layers to progressively extract higher-level features from raw input.",
+                explanation: "Deep learning is like having multiple people review your work, each looking at different aspects - one checks grammar, another checks facts, and so on.",
+                startTime: 27,
+                duration: 18
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            initFileUpload();
+        });
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+            
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            
+            if (currentTheme === 'dark') {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            } else {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            currentTheme = savedTheme;
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            
+            if (savedTheme === 'light') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            }
+        }
+
+        function initFileUpload() {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            uploadZone.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFile(file) {
+            selectedFile = file;
+            document.getElementById('fileName').textContent = `✓ ${file.name}`;
+            document.getElementById('generateBtn').disabled = false;
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            setTimeout(() => {
+                loadDemo();
+            }, 1000);
+        });
+
+        function loadDemo() {
+            paragraphData = mockTranscript;
+            
+            document.getElementById('audioPlayer').classList.add('active');
+            document.getElementById('transcriptContainer').style.display = 'block';
+            
+            document.getElementById('totalParagraphs').textContent = paragraphData.length;
+            
+            renderTranscript();
+            
+            studyStartTime = Date.now();
+            startStudyTimer();
+        }
+
+        function renderTranscript() {
+            const container = document.getElementById('transcriptContent');
+            container.innerHTML = '';
+            
+            paragraphData.forEach((para, index) => {
+                const div = document.createElement('div');
+                div.className = 'transcript-paragraph';
+                div.dataset.index = index;
+                
+                div.innerHTML = `
+                    <div class="para-number">
+                        <span>Paragraph ${para.id}</span>
+                        <button class="bookmark-btn" onclick="toggleBookmark(${index})" id="bookmark-${index}">
+                            ⭐
+                        </button>
+                    </div>
+                    <div>${para.text}</div>
+                    <div class="explanation">
+                        <strong>💡 Explanation:</strong> ${para.explanation}
+                    </div>
+                `;
+                
+                div.addEventListener('click', () => jumpToParagraph(index));
+                container.appendChild(div);
+            });
+        }
+
+        document.getElementById('playBtn').addEventListener('click', togglePlay);
+
+        function togglePlay() {
+            const btn = document.getElementById('playBtn');
+            if (btn.textContent === '▶️') {
+                btn.textContent = '⏸️';
+                startPlayback();
+            } else {
+                btn.textContent = '▶️';
+            }
+        }
+
+        function startPlayback() {
+            let currentTime = 0;
+            const totalDuration = paragraphData.reduce((sum, p) => sum + p.duration, 0);
+            
+            const interval = setInterval(() => {
+                currentTime += 0.1;
+                updateProgress(currentTime, totalDuration);
+                updateHighlight(currentTime);
+                
+                if (currentTime >= totalDuration) {
+                    clearInterval(interval);
+                    document.getElementById('playBtn').textContent = '▶️';
+                }
+            }, 100);
+        }
+
+        function updateProgress(current, total) {
+            const percentage = (current / total) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressHandle').style.left = percentage + '%';
+            
+            document.getElementById('currentTime').textContent = formatTime(current);
+            document.getElementById('totalTime').textContent = formatTime(total);
+            
+            const circumference = 326.73;
+            const offset = circumference - (percentage / 100) * circumference;
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+            document.getElementById('progressPercent').textContent = Math.round(percentage) + '%';
+        }
+
+        function updateHighlight(currentTime) {
+            let cumulativeTime = 0;
+            
+            paragraphData.forEach((para, index) => {
+                const paraElement = document.querySelector(`[data-index="${index}"]`);
+                
+                if (currentTime >= cumulativeTime && currentTime < cumulativeTime + para.duration) {
+                    paraElement.classList.add('active');
+                    currentParagraph = index;
+                    
+                    document.getElementById('completedParagraphs').textContent = index + 1;
+                } else {
+                    paraElement.classList.remove('active');
+                }
+                
+                cumulativeTime += para.duration;
+            });
+        }
+
+        function jumpToParagraph(index) {
+            let startTime = 0;
+            for (let i = 0; i < index; i++) {
+                startTime += paragraphData[i].duration;
+            }
+            
+            updateHighlight(startTime + 0.1);
+        }
+
+        function toggleBookmark(index) {
+            const btn = document.getElementById(`bookmark-${index}`);
+            
+            if (bookmarks.has(index)) {
+                bookmarks.delete(index);
+                btn.classList.remove('bookmarked');
+            } else {
+                bookmarks.add(index);
+                btn.classList.add('bookmarked');
+            }
+            
+            updateBookmarksList();
+            document.getElementById('bookmarkCount').textContent = bookmarks.size;
+        }
+
+        function updateBookmarksList() {
+            const list = document.getElementById('bookmarksList');
+            
+            if (bookmarks.size === 0) {
+                list.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 2rem;">No bookmarks yet</div>';
+                return;
+            }
+            
+            list.innerHTML = '';
+            bookmarks.forEach(index => {
+                const para = paragraphData[index];
+                const div = document.createElement('div');
+                div.className = 'bookmark-item';
+                div.innerHTML = `
+                    <strong>Paragraph ${para.id}</strong>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                        ${para.text.substring(0, 60)}...
+                    </div>
+                `;
+                div.onclick = () => jumpToParagraph(index);
+                list.appendChild(div);
+            });
+        }
+
+        function startStudyTimer() {
+            setInterval(() => {
+                if (studyStartTime) {
+                    const elapsed = Math.floor((Date.now() - studyStartTime) / 1000 / 60);
+                    document.getElementById('studyTime').textContent = elapsed + 'm';
+                }
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
